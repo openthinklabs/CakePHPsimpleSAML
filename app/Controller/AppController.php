@@ -33,4 +33,28 @@ App::uses('Controller', 'Controller');
  * @link http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+	public $components = array(
+			'Session',
+			'Saml.Saml',
+			'Auth' => array(
+					'loginRedirect' => array('controller' => 'posts', 'action' => 'index'),
+					'logoutRedirect' => array('controller' => 'pages', 'action' => 'display', 'home'),
+					'authorize' => array('Controller')
+			)
+	);
+	
+	public function beforeFilter() {
+		//$this->Saml->requireAuth();
+		$this->Auth->allow('index', 'view');
+	}	
+	
+	public function isAuthorized($user) {
+		// Admin can access every action
+		if (isset($user['role']) && $user['role'] === 'admin') {
+			return true;
+		}
+	
+		// Default deny
+		return false;
+	}	
 }
